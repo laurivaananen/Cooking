@@ -9,6 +9,11 @@ import {
   LOGIN_FAILED,
   LOGIN_STARTED,
   LOGIN_SUCCEEDED,
+  LOGOUT_USER,
+  FETCH_USER_DATA,
+  POST_RECIPE_FAILED,
+  POST_RECIPE_STARTED,
+  POST_RECIPE_SUCCEEDED,
 } from './types';
 
 import axios from 'axios';
@@ -16,19 +21,73 @@ import React from 'react';
 import { Route, Redirect } from 'react-router'
 import history from '../history';
 
+export const postRecipe = (data, token) => {
+  const instance = fetchProtectedData(token);
+  return dispatch => {
+    instance.post('recipes/', data)
+      .then(res => {
+        dispatch(postRecipeSucceeded());
+      })
+      .catch(err => {
+        dispatch(postRecipeFailed(err));
+      })
+  }
+}
+
+const postRecipeSucceeded = () => {
+  return {
+    type: POST_RECIPE_SUCCEEDED,
+  }
+}
+
+const postRecipeFailed = err => {
+  console.log(err);
+  return {
+    type: POST_RECIPE_FAILED,
+    payload: {
+      errors: err,
+    }
+  }
+}
+
+export const fetchUserData = token => {
+  const instance = fetchProtectedData(token);
+  return dispatch => {
+    instance.get('user/')
+      .then(res => {
+        const user = {
+          token: token,
+          user: res.data,
+        }
+        dispatch(loginSucceeded(user));
+      })
+      .catch(err => {
+        dispatch(loginFailed(err));
+      })
+  }
+}
+
+const fetchProtectedData = token => {
+  const instance = axios.create({
+    baseURL: 'http://www.laurivaananen.com:8002/',
+    timeout: 1000,
+    headers: {'Authorization': `Token ${token}`}
+  });
+  return instance;
+}
+
 export const login = (params={}) => {
   const {username, password, redirectTo} = params;
-  console.log(redirectTo);
   return dispatch => {
     dispatch(loginStarted());
     axios.post('http://www.laurivaananen.com:8002/login/', {username, password})
       .then(res => {
         dispatch(loginSucceeded(res.data));
-        return dispatch => redirect(redirectTo);
+        redirect(redirectTo);
       })
       .catch(err => {
         dispatch(loginFailed(err));
-      });
+      })
   };
 };
 
@@ -53,13 +112,26 @@ const loginSucceeded = data => {
 }
 
 const loginFailed = data => {
-  console.log("LOGINFAILES");
-  console.log(data);
+  localStorage.removeItem('token');
   return({
     type: LOGIN_FAILED,
     payload: {
       errors: data.response.data.non_field_errors,
     }
+  })
+}
+
+export const logout = () => {
+  return dispatch => {
+    dispatch(logoutUser());
+    redirect("/");
+  }
+}
+
+const logoutUser = () => {
+  localStorage.removeItem('token');
+  return({
+    type: LOGOUT_USER
   })
 }
  

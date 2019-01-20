@@ -16,8 +16,6 @@ const App = () => (
         <Route exact path="/" component={List} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/add" component={requireAuthentication(AddRecipe)} />
-        {/* <SearchFormComponent />
-        <List /> */}
       </div>
     </Router>
   </div>

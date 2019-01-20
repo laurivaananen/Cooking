@@ -56,10 +56,10 @@ class LoginComponent extends Component {
     return(
       <form onSubmit={this.handleSubmit} >
         <label htmlFor='login-username'>Username</label>
-        <input id='login-username' name='username' type='text' value={this.state.value} onChange={this.handleChange} />
+        <input id='login-username' name='username' type='text' value={this.state.username} onChange={this.handleChange} />
         <br />
         <label htmlFor='login-password'>Password</label>
-        <input id='login-password' name='password' type='password' value={this.state.value} onChange={this.handleChange} />
+        <input id='login-password' name='password' type='password' value={this.state.password} onChange={this.handleChange} />
         <br />
         <button type="submit">Login</button>
         {this.props.auth.errors && 

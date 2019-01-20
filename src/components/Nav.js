@@ -4,6 +4,7 @@ import User from './User';
 import { getRecipes, getMoreRecipes } from '../actions/index'
 import { NavLink } from 'react-router-dom'
 import permissionRequired from './AuthOrRedirect';
+import { logout } from '../actions';
 
 const mapStateToProps = ({auth}) => {
   return {
@@ -11,16 +12,24 @@ const mapStateToProps = ({auth}) => {
   };
 };
 
-const NavComponent = ({auth}) => (
+const mapDispatchToProps = dispatch => {
+  return {
+    logout() {
+      dispatch(logout());
+    },
+  }
+}
+
+const NavComponent = ({auth, logout}) => (
   <nav>
     <NavLink to="/" >Home</NavLink>
     <NavLink to="/search" >Search</NavLink>
     <NavLink to="/add" >Add</NavLink>
     {auth.user ? <NavLink to="/user/">{auth.user.username}</NavLink> : <NavLink to="/registe/">Register</NavLink>}
-    {auth.user ? <NavLink to="/logout/">Logout</NavLink> : <NavLink to="/login/">Login</NavLink>}
+    {auth.user ? <a href="" onClick={event => {event.preventDefault(); logout();}}>Logout</a> : <NavLink to="/login/">Login</NavLink>}
   </nav>
 )
 
-const Nav = connect(mapStateToProps)(NavComponent)
+const Nav = connect(mapStateToProps, mapDispatchToProps)(NavComponent)
 
 export default Nav;

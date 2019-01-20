@@ -9,6 +9,10 @@ import {
   LOGIN_FAILED,
   LOGIN_STARTED,
   LOGIN_SUCCEEDED,
+  LOGOUT_USER,
+  POST_RECIPE_FAILED,
+  POST_RECIPE_STARTED,
+  POST_RECIPE_SUCCEEDED
 } from '../actions/types';
 
 const initialState = {
@@ -19,10 +23,26 @@ const initialState = {
   error: null,
   categories: [],
   auth: {isAuthenticated: false},
+  postRecipe: {isPosting: false, posted: false, errors: []}
 };
 
 export default function rootReducer(state = initialState, action) {
   switch (action.type) {
+    case POST_RECIPE_STARTED:
+      return {
+        ...state,
+        postRecipe: {isPosting: true, posted: false}
+      }
+    case POST_RECIPE_SUCCEEDED:
+      return {
+        ...state,
+        postRecipe: {isPosting: false, posted: true}
+      }
+    case POST_RECIPE_FAILED:
+      return {
+        ...state,
+        postRecipe: {isPosting: false, posted: false, errors: [...state.postRecipe.errors, action.payload.errors]}
+      }
     case LOGIN_STARTED:
       return {
         ...state,
@@ -37,7 +57,13 @@ export default function rootReducer(state = initialState, action) {
       return {
         ...state,
         auth: Object.assign({}, state.auth, {errors: action.payload.errors}, {isAuthenticated: false}),
-      }
+      };
+    case LOGOUT_USER:
+      console.log("REDUCING LGOUT_USER")
+      return {
+        ...state,
+        auth: Object.assign({}, {isAuthenticated: false}),
+      };
     case FETCH_RECIPES_STARTED:
       return {
         ...state,

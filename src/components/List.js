@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { getRecipes, getMoreRecipes } from '../actions/index'
+import SearchFormComponent from './SearchForm';
 
 const mapStateToProps = state => {
   return {
@@ -31,12 +32,13 @@ class ConnectedList extends Component {
   render() {
     return (
       <div>
+        <SearchFormComponent />
         <ul>
-          {this.props.recipes.map(recipe => (
+          {this.props.recipes.length ? this.props.recipes.map(recipe => (
             <li key={recipe.id}>
               {recipe.title}
             </li>
-          ))}
+          )) : <p>Found no recipes</p>}
         </ul>
         {this.props.loading && <p>Loading</p>}
         {(this.props.next && !this.props.loading) && <button onClick={() => this.props.loadMore(this.props.next)} >Load More</button>}
