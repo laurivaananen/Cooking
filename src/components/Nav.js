@@ -14,8 +14,8 @@ const mapStateToProps = ({auth}) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    logout() {
-      dispatch(logout());
+    logout(token) {
+      dispatch(logout(token));
     },
   }
 }
@@ -26,7 +26,7 @@ const NavComponent = ({auth, logout}) => (
     <NavLink to="/search" >Search</NavLink>
     <NavLink to="/add" >Add</NavLink>
     {auth.user ? <NavLink to="/user/">{auth.user.username}</NavLink> : <NavLink to="/registe/">Register</NavLink>}
-    {auth.user ? <a href="" onClick={event => {event.preventDefault(); logout();}}>Logout</a> : <NavLink to="/login/">Login</NavLink>}
+    {auth.user ? <a href="" onClick={event => {event.preventDefault(); logout(auth.token);}}>Logout</a> : <NavLink to="/login/">Login</NavLink>}
   </nav>
 )
 

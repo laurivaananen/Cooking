@@ -45,7 +45,7 @@ const postRecipeFailed = err => {
   return {
     type: POST_RECIPE_FAILED,
     payload: {
-      errors: err,
+      errors: err.response.data,
     }
   }
 }
@@ -121,10 +121,14 @@ const loginFailed = data => {
   })
 }
 
-export const logout = () => {
+export const logout = (token) => {
+  const instance = fetchProtectedData(token)
   return dispatch => {
-    dispatch(logoutUser());
-    redirect("/");
+    instance.post('logout/')
+      .then(res => {
+        dispatch(logoutUser());
+        redirect("/");
+      })
   }
 }
 

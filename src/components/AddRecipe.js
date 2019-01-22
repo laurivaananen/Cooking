@@ -29,11 +29,16 @@ class AddRecipeComponent extends Component {
       recipeTitle: '',
       recipeDescription: '',
       recipeCategory: '',
-      recipeIngredient: '',
+      recipeIngredients: [
+        {
+          name: '',
+        },
+      ],
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.statusMessage = this.statusMessage.bind(this);
+    this.clearForm = this.clearForm.bind(this);
   }
 
   handleSubmit(event) {
@@ -42,9 +47,11 @@ class AddRecipeComponent extends Component {
       title: this.state.recipeTitle,
       description: this.state.recipeDescription,
       category: this.state.recipeCategory,
-      ingredients: this.state.recipeIngredient,
+      ingredients_write: this.state.recipeIngredients.filter(x => x.name !== '').map(x => x.name),
     }
+    console.log(params);
     this.props.postRecipe(params, this.props.auth.token);
+    this.clearForm();
   }
 
   handleChange(event) {
@@ -55,11 +62,26 @@ class AddRecipeComponent extends Component {
     this.props.changeCheckbox(event.target.id);
   }
 
+  clearForm() {
+    this.setState({
+      recipeTitle: '',
+      recipeDescription: '',
+      recipeCategory: '',
+      recipeIngredients: [
+        {
+          name: '',
+        },
+      ],
+    })
+  }
+
   createInput = (label, name, type, placeholder) => {
     return(
       <div className='input'>
         <label htmlFor={name}>{label}</label>
-        <input 
+        <input
+          minLength='1'
+          maxLength='128'
           name={name}
           id={name}
           type={type}
@@ -76,24 +98,44 @@ class AddRecipeComponent extends Component {
       return <p>Posting your recipe</p>
     } else if (posted) {
       return <p>Succesfully posted your recipe</p>
-    } else if (errors.length > 0) {
-      return <ul>{errors.map(x => <p>x</p>)}</ul>
+    } else if (errors) {
+      return (
+        <p>Error sending form</p>
+      )
     } else {
-      return <p>Nothing</p>
+      return ''
     }
   }
 
   componentDidMount() {
     this.props.getCategories();
-    console.log(this.props.categories);
     this.setState({recipeCategory: this.props.categories[0]})
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("RECEIVED PROPS");
-    console.log(nextProps);
     this.setState({recipeCategory: nextProps.categories[0].id})
   }
+
+  handleIngredientNameChange = idx => evt => {
+    const newRecipeIngredients = this.state.recipeIngredients.map((recipe, sidx) => {
+      if (idx !== sidx) return recipe;
+      return { ...recipe, name: evt.target.value };
+    });
+
+    this.setState({ recipeIngredients: newRecipeIngredients });
+  };
+
+  handleAddRecipe = () => {
+    this.setState({
+      recipeIngredients: this.state.recipeIngredients.concat([{ name: "" }])
+    });
+  };
+
+  handleRemoveIngredient = idx => () => {
+    this.setState({
+      recipeIngredients: this.state.recipeIngredients.filter((s, sidx) => idx !== sidx)
+    });
+  };
 
 
   render() {
@@ -107,7 +149,33 @@ class AddRecipeComponent extends Component {
             <option key={category.id} value={category.id} name='category'>{category.name}</option>
           ))}
         </select>
-        {this.createInput('Ingredient', 'recipeIngredient', 'text', 'Add ingredient...')}
+        <div>
+        <label>Ingredients</label>
+        <button
+          type="button"
+          onClick={this.handleAddRecipe}
+          className="small"
+        >
+          ✚
+        </button>
+        {this.state.recipeIngredients.map((ingredient, idx) => (
+          <div key={idx}>
+            <input
+              key={idx}
+              type='text'
+              value={ingredient.name}
+              onChange={this.handleIngredientNameChange(idx)}
+            />
+            <button
+              type="button"
+              onClick={this.handleRemoveIngredient(idx)}
+              className="small"
+            >
+              ✖
+            </button>
+          </div>
+        ))}
+        </div>
         <input type='submit' value='Submit' />
         {this.statusMessage(this.props.postRecipeStatus)}
       </form>

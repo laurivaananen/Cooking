@@ -23,7 +23,7 @@ const initialState = {
   error: null,
   categories: [],
   auth: {isAuthenticated: false},
-  postRecipe: {isPosting: false, posted: false, errors: []}
+  postRecipe: {isPosting: false, posted: false, errors: null}
 };
 
 export default function rootReducer(state = initialState, action) {
@@ -41,7 +41,7 @@ export default function rootReducer(state = initialState, action) {
     case POST_RECIPE_FAILED:
       return {
         ...state,
-        postRecipe: {isPosting: false, posted: false, errors: [...state.postRecipe.errors, action.payload.errors]}
+        postRecipe: {isPosting: false, posted: false, errors: action.payload.errors}
       }
     case LOGIN_STARTED:
       return {
@@ -59,7 +59,6 @@ export default function rootReducer(state = initialState, action) {
         auth: Object.assign({}, state.auth, {errors: action.payload.errors}, {isAuthenticated: false}),
       };
     case LOGOUT_USER:
-      console.log("REDUCING LGOUT_USER")
       return {
         ...state,
         auth: Object.assign({}, {isAuthenticated: false}),
