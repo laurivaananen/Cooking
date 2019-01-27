@@ -13,12 +13,9 @@ import {fetchUserData} from './actions';
 // use applyMiddleware to add the thunk middleware to the store
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
-console.log("GETTING TOKEN");
 let token = localStorage.getItem('token');
-console.log(token);
 
 if (token !== null) {
-  console.log("NULL TOKEN")
   store.dispatch(fetchUserData(token));
 }
 

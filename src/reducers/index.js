@@ -12,7 +12,10 @@ import {
   LOGOUT_USER,
   POST_RECIPE_FAILED,
   POST_RECIPE_STARTED,
-  POST_RECIPE_SUCCEEDED
+  POST_RECIPE_SUCCEEDED,
+  REGISTER_FAILED,
+  REGISTER_STARTED,
+  REGISTER_SUCCEEDED,
 } from '../actions/types';
 
 const initialState = {
@@ -22,7 +25,8 @@ const initialState = {
   recipes: [],
   error: null,
   categories: [],
-  auth: {isAuthenticated: false},
+  register: {loading: false, posted: false, errors: {username: [], password: []}},
+  auth: {isAuthenticated: false, errors: {username: [], password: [], non_field_errors: []}},
   postRecipe: {isPosting: false, posted: false, errors: null}
 };
 
@@ -43,6 +47,11 @@ export default function rootReducer(state = initialState, action) {
         ...state,
         postRecipe: {isPosting: false, posted: false, errors: action.payload.errors}
       }
+    case REGISTER_STARTED:
+      return {
+        ...state,
+        register: Object.assign({}, state.register, {isLoading: true})
+      }
     case LOGIN_STARTED:
       return {
         ...state,
@@ -51,8 +60,14 @@ export default function rootReducer(state = initialState, action) {
     case LOGIN_SUCCEEDED:
       return {
         ...state,
-        auth: Object.assign({}, action.payload.auth, {isAuthenticated: true}),
+        auth: Object.assign({}, action.payload.auth, {isAuthenticated: true}, {errors: {username: [], password: [], non_field_errors: []}}),
+        register: Object.assign({}, state.register, {errors: {username: [], password: []}})
       };
+    case REGISTER_FAILED:
+      return {
+        ...state,
+        register: Object.assign({}, state.register, {errors: action.payload.errors, isLoading: false})
+      }
     case LOGIN_FAILED:
       return {
         ...state,
@@ -61,7 +76,7 @@ export default function rootReducer(state = initialState, action) {
     case LOGOUT_USER:
       return {
         ...state,
-        auth: Object.assign({}, {isAuthenticated: false}),
+        auth: Object.assign({}, {errors: {username: [], password: [], non_field_errors: []}}, {isAuthenticated: false}),
       };
     case FETCH_RECIPES_STARTED:
       return {

@@ -77,30 +77,33 @@ class AddRecipeComponent extends Component {
 
   createInput = (label, name, type, placeholder) => {
     return(
-      <div className='input'>
-        <label htmlFor={name}>{label}</label>
-        <input
-          minLength='1'
-          maxLength='128'
-          name={name}
-          id={name}
-          type={type}
-          value={this.state[name]}
-          onChange={this.handleChange}
-          placeholder={placeholder}
-        />
+      <div className='field'>
+        <label className="label" htmlFor={name}>{label}</label>
+        <div className='control'>
+          <input
+            minLength='1'
+            maxLength='128'
+            name={name}
+            id={name}
+            type={type}
+            value={this.state[name]}
+            onChange={this.handleChange}
+            placeholder={placeholder}
+            className="input"
+          />
+        </div>
       </div>
     )
   }
 
   statusMessage = ({isPosting, posted, errors}) => {
     if(isPosting) {
-      return <p>Posting your recipe</p>
+      return <p className='help'>Posting your recipe</p>
     } else if (posted) {
-      return <p>Succesfully posted your recipe</p>
+      return <p className='help is-success'>Succesfully posted your recipe</p>
     } else if (errors) {
       return (
-        <p>Error sending form</p>
+        <p className='help is-danger'>Error sending form</p>
       )
     } else {
       return ''
@@ -140,44 +143,58 @@ class AddRecipeComponent extends Component {
 
   render() {
     return(
-      <form onSubmit={this.handleSubmit}>
+      <form className="container" onSubmit={this.handleSubmit}>
         {this.createInput('Title', 'recipeTitle', 'text', 'Recipe title..')}
         {this.createInput('Description', 'recipeDescription', 'text', 'Recipe description..')}
-        <label htmlFor='recipeCategory'>Category</label>
-        <select name='recipeCategory' value={this.state.recipeCategory} onChange={this.handleChange} >
-          {this.props.categories.map(category => (
-            <option key={category.id} value={category.id} name='category'>{category.name}</option>
-          ))}
-        </select>
-        <div>
-        <label>Ingredients</label>
-        <button
-          type="button"
-          onClick={this.handleAddRecipe}
-          className="small"
-        >
-          ✚
-        </button>
-        {this.state.recipeIngredients.map((ingredient, idx) => (
-          <div key={idx}>
-            <input
-              key={idx}
-              type='text'
-              value={ingredient.name}
-              onChange={this.handleIngredientNameChange(idx)}
-            />
-            <button
-              type="button"
-              onClick={this.handleRemoveIngredient(idx)}
-              className="small"
-            >
-              ✖
-            </button>
+        <div className='field'>
+          <label className='label' htmlFor='recipeCategory'>Category</label>
+          <div className='control'>
+            <div className='select'>
+              <select name='recipeCategory' value={this.state.recipeCategory} onChange={this.handleChange} >
+                {this.props.categories.map(category => (
+                  <option key={category.id} value={category.id} name='category'>{category.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
-        ))}
         </div>
-        <input type='submit' value='Submit' />
-        {this.statusMessage(this.props.postRecipeStatus)}
+        <div className="field" >
+          <label className='label' >Ingredients</label>
+          <button
+            type="button"
+            onClick={this.handleAddRecipe}
+            className="button is-info"
+          >
+            Add another ingredient
+          </button>
+        </div>
+          {this.state.recipeIngredients.map((ingredient, idx) => (
+            <div className='field has-addons' key={idx}>
+              <div className='control'>
+                <input
+                  className='input'
+                  type='text'
+                  value={ingredient.name}
+                  onChange={this.handleIngredientNameChange(idx)}
+                />
+              </div>
+              <div className='control'>
+                <button
+                  type="button"
+                  onClick={this.handleRemoveIngredient(idx)}
+                  className="button is-info"
+                >
+                  ✖
+                </button>
+              </div>
+            </div>
+          ))}
+        <div className='field'>
+          <div className='control'>
+            <input className='button is-primary' type='submit' value='Submit' />
+          </div>
+          {this.statusMessage(this.props.postRecipeStatus)}
+        </div>
       </form>
     )
   }

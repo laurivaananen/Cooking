@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { login } from '../actions/index'
 
 const mapStateToProps = ({auth}) => {
   return {
@@ -8,17 +7,12 @@ const mapStateToProps = ({auth}) => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    login(params) {
-      dispatch(login(params));
-    },
-  }
-}
-
 const UserComponent = ({auth}) => {
   return(
-  <p>{auth.user ? auth.user.username : 'NOTHING'}</p>
+  <div className='container' >
+    <h1 className='h1' >User Profile</h1>
+    <p>{auth.user ? auth.user.username : 'NOTHING'}</p>
+  </div>
   )
 }
 

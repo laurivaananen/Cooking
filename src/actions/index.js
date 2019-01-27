@@ -14,6 +14,9 @@ import {
   POST_RECIPE_FAILED,
   POST_RECIPE_STARTED,
   POST_RECIPE_SUCCEEDED,
+  REGISTER_FAILED,
+  REGISTER_STARTED,
+  REGISTER_SUCCEEDED,
 } from './types';
 
 import axios from 'axios';
@@ -41,7 +44,6 @@ const postRecipeSucceeded = () => {
 }
 
 const postRecipeFailed = err => {
-  console.log(err);
   return {
     type: POST_RECIPE_FAILED,
     payload: {
@@ -76,6 +78,21 @@ const fetchProtectedData = token => {
   return instance;
 }
 
+export const register = (params={}) => {
+  const {username, password} = params;
+  return dispatch => {
+    dispatch(registerStarted());
+    axios.post('http://www.laurivaananen.com:8002/register/', {username, password})
+      .then(res => {
+        dispatch(loginSucceeded(res.data));
+        redirect('/');
+      })
+      .catch(err => {
+        dispatch(registerFailed(err));
+      })
+  }
+}
+
 export const login = (params={}) => {
   const {username, password, redirectTo} = params;
   return dispatch => {
@@ -95,6 +112,12 @@ const redirect = url => {
   history.push(url);
 }
 
+const registerStarted = () => {
+  return({
+    type: REGISTER_STARTED,
+  })
+}
+
 const loginStarted = () => {
   return({
     type: LOGIN_STARTED,
@@ -111,20 +134,29 @@ const loginSucceeded = data => {
   })
 }
 
+const registerFailed = data => {
+  return({
+    type: REGISTER_FAILED,
+    payload: {
+      errors: data.response.data,
+    }
+  })
+}
+
 const loginFailed = data => {
   localStorage.removeItem('token');
   return({
     type: LOGIN_FAILED,
     payload: {
-      errors: data.response.data.non_field_errors,
+      errors: data.response.data,
     }
   })
 }
 
-export const logout = (token) => {
+export const logout = token => {
   const instance = fetchProtectedData(token)
   return dispatch => {
-    instance.post('logout/')
+    instance.post('logout/', {})
       .then(res => {
         dispatch(logoutUser());
         redirect("/");

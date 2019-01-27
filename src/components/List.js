@@ -31,9 +31,9 @@ class ConnectedList extends Component {
 
   render() {
     return (
-      <div>
+      <div className="container">
         <SearchFormComponent />
-        <ul>
+        <ul className="content">
           {this.props.recipes.length ? this.props.recipes.map(recipe => (
             <li key={recipe.id}>
               {recipe.title}

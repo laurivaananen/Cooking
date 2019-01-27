@@ -50,17 +50,16 @@ class SearchForm extends Component {
 
   render() {
     return (
-      <div>
-        <p>Form</p>
-        <form onSubmit={this.handleSubmit} >
+      <div className="container">
+        <form className="field is-grouped" onSubmit={this.handleSubmit} >
           {this.props.categories.map(category => (
-            <div key={category.id} >
+            <div className="control" key={category.id} >
               <input type="checkbox" checked={category.isSelected} onChange={this.selectCheckbox} name="category[]" value={category.name} id={category.id} />
-              <label htmlFor={category.id}>{category.name}</label>
+              <label className="checkbox" htmlFor={category.id}>{category.name}</label>
             </div>
           ))}
           
-          <button type="submit">Search</button>
+          <button className="button is-primary" type="submit">Search</button>
         </form>
       </div>
     );
